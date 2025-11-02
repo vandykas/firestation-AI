@@ -1,0 +1,30 @@
+Belajar GIT
+
+requirement :
+-install git
+
+LAKUKAN SEMUA DI GITBASH
+steps cara penggunaan :
+
+(jika belum ada file git nya di komputer)
+-git clone https://github.com/vandykas/firestation-AI.git
+
+(Jika belum ada branch nya )
+- git branch "nama branch"
+
+(jika ingin pindah ke branch)
+- git checkout "nama branch"
+
+(jika ingin buat file)
+langsung buat di vscode , buat new file nya
+
+(jika ingin upload sebuah file yang telah diubah)
+- git add "nama  file" (jika ingin upload semua ganti "nama file" jadi .
+- git commit -m "description"
+- git push 
+
+(jika ingin melihat ada file apa aja yang pending untuk di push)
+-  git status https://github.com/vandykas/firestation-AI.git
+
+(jika ingin update repo dari github)
+-git pull

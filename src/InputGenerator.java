@@ -15,14 +15,14 @@ public class InputGenerator {
 
         Path file = Path.of("input\\" + fileName);
         try (BufferedWriter bw = Files.newBufferedWriter(file)) {
-            writeInput(bw, n, m);
+            writeInput(bw, m, n);
         }
         catch (IOException e) {
             System.out.println("Error " + e.getMessage());
         }
     }
 
-    public static void writeInput(BufferedWriter bw, int n, int m) throws IOException {
+    public static void writeInput(BufferedWriter bw, int m, int n) throws IOException {
         bw.write(m + " " + n + "\n");
         Random rand = new Random();
         int minHousePercent = 15, maxHousePercent = 20;
@@ -36,12 +36,12 @@ public class InputGenerator {
         bw.write(p + " " + h + " " + t + "\n");
 
         TreeSet<String> positionAdded = new TreeSet<>();
-        generatePosition(bw, rand, positionAdded, n, m, h);
-        generatePosition(bw, rand, positionAdded, n, m, t);
+        generatePosition(bw, rand, positionAdded, m, n, h);
+        generatePosition(bw, rand, positionAdded, m, n, t);
     }
 
     public static void generatePosition(BufferedWriter bw, Random rand, TreeSet<String> positionAdded,
-                                        int n, int m, int size) throws IOException {
+                                        int m, int n, int size) throws IOException {
         for (int i = 0; i < size; i++) {
             int x, y;
             do {

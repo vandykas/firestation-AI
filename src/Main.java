@@ -22,7 +22,7 @@ public class Main {
             FireStation fireStation = new FireStation(m, n, fireStationsCount);
             fillCell(sc, fireStation, true, houseCount);
             fillCell(sc, fireStation, false, treeCount);
-            fireStation.generateDistances();
+            doHillClimbing(fireStation);
         }
         catch (FileNotFoundException e) {
             System.out.println("File " + args[0] + " not found!");
@@ -41,5 +41,10 @@ public class Main {
                 fireStation.changeToTree(x, y);
             }
         }
+    }
+
+    public static void doHillClimbing(FireStation fireStation) {
+        HC myHillClimbing = new HC(fireStation);
+        System.out.printf("Best found solution is: %.5f\n", myHillClimbing.hillClimbing(100));
     }
 }

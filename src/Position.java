@@ -15,10 +15,14 @@ public class Position {
         return this.y;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-    public void setY(int y) {
-        this.y = y;
+    @Override
+    public boolean equals(Object otherPos) {
+        if (otherPos == this) {
+            return true;
+        }
+        else if (!(otherPos instanceof Position)) {
+            return false;
+        }
+        return this.x == ((Position) otherPos).x && this.y == ((Position) otherPos).y;
     }
 }

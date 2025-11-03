@@ -22,6 +22,7 @@ public class Main {
             FireStation fireStation = new FireStation(m, n, fireStationsCount);
             fillCell(sc, fireStation, true, houseCount);
             fillCell(sc, fireStation, false, treeCount);
+            fireStation.generateDistances();
         }
         catch (FileNotFoundException e) {
             System.out.println("File " + args[0] + " not found!");

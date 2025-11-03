@@ -10,16 +10,21 @@ public class State {
     public State(FireStation env) {
         this.state = new ArrayList<>(env.getFireStationsCount());
         this.env = env;
+        generateStartingState();
     }
 
-    public State(List<Position> state,  FireStation env) {
+    public State(List<Position> state, FireStation env) {
         this.state = state;
         this.env = env;
     }
 
+    public List<Position> getState() {
+        return state;
+    }
+
     public void generateStartingState() {
         for (int i = 0; i < env.getFireStationsCount(); i++) {
-            state.set(i, new Position(rand.nextInt(env.getRowSize()), rand.nextInt(env.getColumnSize())));
+            state.add(new Position(rand.nextInt(env.getRowSize()), rand.nextInt(env.getColumnSize())));
         }
     }
 
@@ -27,7 +32,6 @@ public class State {
         int indexToChange = this.rand.nextInt(state.size());
 
         List<Position> neighborState = new ArrayList<>(state);
-        int newX, newY;
         Position newPos;
         do {
             newPos = new Position(rand.nextInt(env.getRowSize()), this.rand.nextInt(env.getColumnSize()));

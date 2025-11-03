@@ -51,20 +51,6 @@ public class FireStation {
         return grid[x][y] == CellStatus.EMPTY;
     }
 
-    public void generateDistances() {
-        for (int i = 0; i < rowSize; i++) {
-            for (int j = 0; j < columnSize; j++) {
-                if (grid[i][j] == CellStatus.HOUSE) {
-                    bfs(i, j);
-                    distDP[i][j] = -1;
-                }
-                else if (grid[i][j] == CellStatus.TREE) {
-                    distDP[i][j] = -1;
-                }
-            }
-        }
-    }
-
     class Node {
         Position pos;
         int dist;
@@ -75,10 +61,10 @@ public class FireStation {
         }
     }
 
-    private void bfs(int x, int y) {
+    public int bfs(int x, int y) {
         int[] moveX = {-1, 0, 1, 0};
         int[] moveY = {0, 1, 0, -1};
-        int curDist = 0;
+        int curDist = 0, minDist = 0;
         Queue<Node> queue = new LinkedList<>();
         queue.add(new Node(new Position(x, y), curDist));
         boolean[][] visited = new boolean[rowSize][columnSize];
@@ -88,16 +74,17 @@ public class FireStation {
             for (int i = 0; i < 4; i++) {
                 int newX = node.pos.getX() + moveX[i];
                 int newY = node.pos.getY() + moveY[i];
-                if (newX >= 0 && newX < rowSize && newY >= 0 && newY < columnSize
-                && !visited[newX][newY] && grid[newX][newY] == CellStatus.EMPTY) {
-                    visited[newX][newY] = true;
-                    queue.add(new Node(new Position(newX, newY), node.dist + 1));
+                if (newX >= 0 && newX < rowSize && newY >= 0 && newY < columnSize) {
+                    if (!visited[newX][newY] && grid[newX][newY] == CellStatus.EMPTY) {
+                        visited[newX][newY] = true;
+                        queue.add(new Node(new Position(newX, newY), node.dist + 1));
+                    }
+                    else if (grid[newX][newY] == CellStatus.HOUSE) {
+                        minDist += node.dist + 1;
+                    }
                 }
             }
         }
-    }
-
-    public int getDist(int x, int y) {
-        return distDP[x][y];
+        return minDist;
     }
 }

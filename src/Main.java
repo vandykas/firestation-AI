@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -45,6 +46,12 @@ public class Main {
 
     public static void doHillClimbing(FireStation fireStation) {
         HC myHillClimbing = new HC(fireStation);
-        System.out.printf("Best found solution is: %.5f\n", myHillClimbing.hillClimbing(100));
+        Solution result = myHillClimbing.randomRestartHillClimbing(100, 100);
+        List<Position> bestFireStationState = result.getFireStationPos();
+
+        System.out.printf("%d %.5f\n", bestFireStationState.size(), result.getBestDistance());
+        for (Position position : bestFireStationState) {
+            System.out.println(position.getX() + " " + position.getY());
+        }
     }
 }

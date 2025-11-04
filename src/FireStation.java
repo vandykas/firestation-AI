@@ -67,22 +67,15 @@ public class FireStation {
         }
     }
 
-    public int getMinimumDistance(List<Position> fireStationPos) {
-        int minDist = 0;
+    public double getMinimumDistance(List<Position> fireStationPos) {
+        double minDist = 0;
         for (Position pos : housePositions) {
-            int distFound = bfs(pos.getX(), pos.getY(), fireStationPos);
-            if (distFound == Integer.MAX_VALUE) {
-                minDist = Integer.MAX_VALUE;
-                break;
-            }
-            else {
-                minDist +=  distFound;
-            }
+            minDist += bfs(pos.getX(), pos.getY(), fireStationPos);
         }
         return minDist;
     }
 
-    private int bfs(int x, int y, List<Position> fireStationPos) {
+    private double bfs(int x, int y, List<Position> fireStationPos) {
         int[] moveX = {-1, 0, 1, 0};
         int[] moveY = {0, 1, 0, -1};
         boolean[][] visited = new boolean[rowSize][columnSize];
@@ -90,7 +83,7 @@ public class FireStation {
         Queue<Node> queue = new LinkedList<>();
         queue.add(new Node(new Position(x, y), 0));
         boolean found = false;
-        int dist = Integer.MAX_VALUE;
+        double dist = 0;
         while (!queue.isEmpty()) {
             Node node = queue.poll();
             for (int i = 0; i < 4; i++) {

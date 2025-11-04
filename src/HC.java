@@ -35,8 +35,8 @@ public class HC {
     }
 
     private double objectiveFunction(State currentState) {
-        int cost = fireStation.getMinimumDistance(currentState.getState());
+        double cost = fireStation.getMinimumDistance(currentState.getState());
         int fireStationCounts = fireStation.getFireStationsCount();
-        return (double) cost / fireStationCounts;
+        return cost / fireStationCounts;
     }
 }

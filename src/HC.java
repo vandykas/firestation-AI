@@ -1,6 +1,5 @@
 public class HC {
     private final FireStation fireStation;
-    private State bestState;
 
     public HC(FireStation fireStation) {
         this.fireStation = fireStation;
@@ -8,14 +7,14 @@ public class HC {
 
     public Solution hillClimbing(int maxIteration) {
         State currentState = new State(fireStation);
-        Solution result = new Solution(null, Double.MAX_VALUE);
+        Solution result = new Solution(currentState.getState(), objectiveFunction(currentState));
         for (int i = 0; i < maxIteration; i++) {
             State neighborState = currentState.generateNeighbor();
-            double neighborDistance = objectiveFunction(currentState);
+            double neighborDistance = objectiveFunction(neighborState);
             Solution neighborResult = new Solution(neighborState.getState(), neighborDistance);
             if (neighborResult.compareTo(result) < 0) {
-                result.setBestDistance(neighborResult.getBestDistance());
-                result.setFireStationPos(neighborResult.getFireStationPos());
+                result.setBestDistance(neighborDistance);
+                result.setFireStationPos(neighborState.getState());
                 currentState = neighborState;
             }
         }

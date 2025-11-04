@@ -43,12 +43,12 @@ public class FireStation {
         return fireStationsCount;
     }
 
-    public void changeToHouse(int x, int y) {
+    public void addHouseToGrid(int x, int y) {
         grid[x][y] = CellStatus.HOUSE;
         housePositions.add(new Position(x,y));
     }
 
-    public void changeToTree(int x, int y) {
+    public void addTreeToGrid(int x, int y) {
         grid[x][y] = CellStatus.TREE;
         treePositions.add(new Position(x,y));
     }
@@ -69,7 +69,7 @@ public class FireStation {
 
     public int getMinimumDistance(List<Position> fireStationPos) {
         int minDist = 0;
-        for (Position pos : fireStationPos) {
+        for (Position pos : housePositions) {
             int distFound = bfs(pos.getX(), pos.getY(), fireStationPos);
             if (distFound == Integer.MAX_VALUE) {
                 minDist = Integer.MAX_VALUE;
@@ -99,7 +99,7 @@ public class FireStation {
                 Position newPos = new Position(newX, newY);
                 Node newNode = new Node(newPos, node.dist + 1);
                 if (newX >= 0 && newX < rowSize && newY >= 0 && newY < columnSize && !visited[newX][newY]) {
-                    if (fireStationPos.contains(newPos)) {
+                    if (!found && fireStationPos.contains(newPos)) {
                         dist = newNode.dist;
                         found = true;
                     }

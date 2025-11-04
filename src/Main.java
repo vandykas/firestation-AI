@@ -36,17 +36,18 @@ public class Main {
             int y = sc.nextInt();
             x--; y--;
             if (isFillHouse) {
-                fireStation.changeToHouse(x, y);
+                fireStation.addHouseToGrid(x, y);
             }
             else {
-                fireStation.changeToTree(x, y);
+                fireStation.addTreeToGrid(x, y);
             }
         }
     }
 
     public static void doHillClimbing(FireStation fireStation) {
         HC myHillClimbing = new HC(fireStation);
-        Solution result = myHillClimbing.randomRestartHillClimbing(100, 100);
+        Solution result = myHillClimbing.randomRestartHillClimbing(50, 10);
+//        Solution result = myHillClimbing.hillClimbing(1);
         List<Position> bestFireStationState = result.getFireStationPos();
 
         System.out.printf("%d %.5f\n", bestFireStationState.size(), result.getBestDistance());

@@ -24,13 +24,15 @@ public class State {
 
     public void generateStartingState() {
         int x, y;
+        Position fireStationPos;
         for (int i = 0; i < env.getFireStationsCount(); i++) {
             do {
                 x = rand.nextInt(env.getRowSize());
                 y = rand.nextInt(env.getColumnSize());
+                fireStationPos = new Position(x, y);
             }
-            while (!env.isEmpty(x, y));
-            state.add(new Position(x, y));
+            while (!env.isEmpty(x, y) || state.contains(fireStationPos));
+            state.add(fireStationPos);
         }
     }
 

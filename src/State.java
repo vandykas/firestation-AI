@@ -23,8 +23,14 @@ public class State {
     }
 
     public void generateStartingState() {
+        int x, y;
         for (int i = 0; i < env.getFireStationsCount(); i++) {
-            state.add(new Position(rand.nextInt(env.getRowSize()), rand.nextInt(env.getColumnSize())));
+            do {
+                x = rand.nextInt(env.getRowSize());
+                y = rand.nextInt(env.getColumnSize());
+            }
+            while (!env.isEmpty(x, y));
+            state.add(new Position(x, y));
         }
     }
 
@@ -40,9 +46,5 @@ public class State {
 
         neighborState.set(indexToChange, newPos);
         return new State(neighborState, env);
-    }
-
-    public Position getPosition(int index) {
-        return state.get(index);
     }
 }

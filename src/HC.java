@@ -6,10 +6,6 @@ public class HC {
         this.fireStation = fireStation;
     }
 
-    public State getBestState() {
-        return bestState;
-    }
-
     public Solution hillClimbing(int maxIteration) {
         State currentState = new State(fireStation);
         Solution result = new Solution(null, Double.MAX_VALUE);
@@ -34,17 +30,14 @@ public class HC {
                 result.setBestDistance(resultFound.getBestDistance());
                 result.setFireStationPos(resultFound.getFireStationPos());
             }
+            System.out.printf("Run: %d best distance: %.5f\n", i + 1, result.getBestDistance());
         }
         return result;
     }
 
     private double objectiveFunction(State currentState) {
-        double cost = 0;
-        int fireStationCount = fireStation.getFireStationsCount();
-        for (int i = 0; i < fireStationCount; i++) {
-            Position pos = currentState.getPosition(i);
-            cost += fireStation.bfs(pos.getX(), pos.getY());
-        }
-        return cost / fireStationCount;
+        int cost = fireStation.getMinimumDistance(currentState.getState());
+        int fireStationCounts = fireStation.getFireStationsCount();
+        return (double) cost / fireStationCounts;
     }
 }

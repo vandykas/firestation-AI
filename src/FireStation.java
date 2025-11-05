@@ -43,6 +43,10 @@ public class FireStation {
         return fireStationsCount;
     }
 
+    public int getHousePositionsCount() {
+        return housePositions.size();
+    }
+
     public void addHouseToGrid(int x, int y) {
         grid[x][y] = CellStatus.HOUSE;
         housePositions.add(new Position(x,y));

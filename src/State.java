@@ -37,16 +37,28 @@ public class State {
     }
 
     public State generateNeighbor() {
-        int indexToChange = this.rand.nextInt(state.size());
+        int[] moveX = {-1, 0, 1, 0};
+        int[] moveY = {0, 1, 0, -1};
 
-        List<Position> neighborState = new ArrayList<>(state);
-        Position newPos;
+        boolean neighborFound = false;
+        List<Position> neighborState;
         do {
-            newPos = new Position(rand.nextInt(env.getRowSize()), this.rand.nextInt(env.getColumnSize()));
-        }
-        while (!env.isEmpty(newPos.getX(), newPos.getY()) || neighborState.contains(newPos));
+            int indexToChange = rand.nextInt(state.size());
+            neighborState = new ArrayList<>(state);
+            Position newPos;
 
-        neighborState.set(indexToChange, newPos);
+            int movement = rand.nextInt(moveX.length);
+            int newX = state.get(indexToChange).getX() + moveX[movement];
+            int newY = state.get(indexToChange).getY() + moveY[movement];
+            newPos = new Position(newX, newY);
+
+            if (env.isInTheGrid(newX, newY) && env.isEmpty(newPos.getX(), newPos.getY())
+                    && !neighborState.contains(newPos)) {
+                neighborFound = true;
+                neighborState.set(indexToChange, newPos);
+            }
+        }
+        while (!neighborFound);
         return new State(neighborState, env);
     }
 }

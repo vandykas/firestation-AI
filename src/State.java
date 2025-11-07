@@ -4,18 +4,23 @@ import java.util.Random;
 
 public class State {
     private final List<Position> state;
-    private final Random rand = new Random();
+    // Ganti: private final Random rand = new Random();
+    private final Random rand; 
     private final FireStation env;
 
-    public State(FireStation env) {
+    // Konstruktor 1: Menerima objek Random yang sudah di-seed
+    public State(FireStation env, Random rand) { 
         this.state = new ArrayList<>(env.getFireStationsCount());
         this.env = env;
+        this.rand = rand; // Simpan objek Random yang di-seed
         generateStartingState();
     }
 
-    public State(List<Position> state, FireStation env) {
-        this.state = state;
+    // Konstruktor 2: Menerima objek Random untuk copy/neighbor
+    public State(List<Position> state, FireStation env, Random rand) { 
+        this.state = state; // Asumsi ini adalah deep copy atau List baru
         this.env = env;
+        this.rand = rand;
     }
 
     public List<Position> getState() {
@@ -27,8 +32,8 @@ public class State {
         Position fireStationPos;
         for (int i = 0; i < env.getFireStationsCount(); i++) {
             do {
-                x = rand.nextInt(env.getRowSize());
-                y = rand.nextInt(env.getColumnSize());
+                x = this.rand.nextInt(env.getRowSize()); // Menggunakan this.rand yang di-seed
+                y = this.rand.nextInt(env.getColumnSize()); // Menggunakan this.rand yang di-seed
                 fireStationPos = new Position(x, y);
             }
             while (!env.isEmpty(x, y) || state.contains(fireStationPos));
@@ -37,16 +42,33 @@ public class State {
     }
 
     public State generateNeighbor() {
-        int indexToChange = this.rand.nextInt(state.size());
+        int[] moveX = {-1, 0, 1, 0};
+        int[] moveY = {0, 1, 0, -1};
 
-        List<Position> neighborState = new ArrayList<>(state);
-        Position newPos;
+        boolean neighborFound = false;
+        List<Position> neighborState;
+        State newNeighbor = null; 
+        
         do {
-            newPos = new Position(rand.nextInt(env.getRowSize()), this.rand.nextInt(env.getColumnSize()));
-        }
-        while (!env.isEmpty(newPos.getX(), newPos.getY()) || neighborState.contains(newPos));
+            int indexToChange = this.rand.nextInt(state.size()); // Menggunakan this.rand yang di-seed
+            neighborState = new ArrayList<>(state);
+            Position newPos;
 
-        neighborState.set(indexToChange, newPos);
-        return new State(neighborState, env);
+            int movement = this.rand.nextInt(moveX.length); // Menggunakan this.rand yang di-seed
+            int newX = state.get(indexToChange).getX() + moveX[movement];
+            int newY = state.get(indexToChange).getY() + moveY[movement];
+            newPos = new Position(newX, newY);
+
+            if (env.isInTheGrid(newX, newY) && env.isEmpty(newPos.getX(), newPos.getY())
+                    && !state.contains(newPos)) {
+                neighborState.remove(indexToChange);
+                neighborState.add(newPos);
+                neighborFound = true;
+                // Membuat State baru dengan objek Random yang sama
+                newNeighbor = new State(neighborState, env, this.rand); 
+            }
+        } while (!neighborFound);
+
+        return newNeighbor; 
     }
 }

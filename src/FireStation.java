@@ -43,6 +43,10 @@ public class FireStation {
         return fireStationsCount;
     }
 
+    public int getHousePositionsCount() {
+        return housePositions.size();
+    }
+
     public void addHouseToGrid(int x, int y) {
         grid[x][y] = CellStatus.HOUSE;
         housePositions.add(new Position(x,y));
@@ -55,6 +59,10 @@ public class FireStation {
 
     public boolean isEmpty(int x, int y) {
         return grid[x][y] == CellStatus.EMPTY;
+    }
+
+    public boolean isInTheGrid(int x, int y) {
+        return x >= 0 && x < rowSize && y >= 0 && y < columnSize;
     }
 
     class Node {
@@ -91,7 +99,7 @@ public class FireStation {
                 int newY = node.pos.getY() + moveY[i];
                 Position newPos = new Position(newX, newY);
                 Node newNode = new Node(newPos, node.dist + 1);
-                if (newX >= 0 && newX < rowSize && newY >= 0 && newY < columnSize && !visited[newX][newY]) {
+                if (isInTheGrid(newX, newY) && !visited[newX][newY]) {
                     if (!found && fireStationPos.contains(newPos)) {
                         dist = newNode.dist;
                         found = true;

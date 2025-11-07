@@ -1,81 +1,80 @@
-import java.util.*;
+import java.util.Random;
 
 public class MySA {
-	static final long seed = System.currentTimeMillis();
-	//untuk penggunaan seed harus ada ditambah l di belakang angka
-	static final Random rnd = new Random(1762087144431l);
-    static final double MIN_X = -6.0;
-    static final double MAX_X = 6.0;
+    private final FireStation fireStation;
+    private final Random rnd; 
 
-    // objective function (maximizing)
-	//f(x)=−0.2x^4 + 1.2x^3 − 1.1x^2 + 0.3x + 0.5sin(19x) + 0.75cos(13x)
-    static double f(double x) {
-		double term1 = -0.2 * (x*x*x*x);
-		double term2 =  1.2 * (x*x*x);
-		double term3 = -1.1 * (x*x);
-		double term4 =  0.3 * x;
-		double term5 =  0.5 * Math.sin(19*x);
-		double term6 =  0.75* Math.cos(13*x);
-        return term1 + term2 + term3 + term4 + term5 + term6;
+    // Menerima objek Random yang sudah di-seed (dari Main)
+    public MySA(FireStation fireStation, Random seededRnd) { 
+        this.fireStation = fireStation;
+        this.rnd = seededRnd; 
+    }
+    
+    /**
+     * Fungsi Objektif: Sama dengan yang dipakai HC. 
+     * Meminimalkan rata-rata jarak terdekat dari semua rumah
+     * ke Fire Station terdekat.
+     */
+    private double objectiveFunction(State currentState) {
+        // fireStation.getMinimumDistance mengembalikan total jarak minimum (cost)
+        double cost = fireStation.getMinimumDistance(currentState.getState()); 
+        int housePositionsCount = fireStation.getHousePositionsCount();
+        return cost / housePositionsCount; // Rata-rata jarak minimum
     }
 
-    // pastikan x ada diantara MAX_X dan MIN_X;
-    static double clamp(double x) {
-		x = Math.max(MIN_X, x);
-		x = Math.min(x, MAX_X);
-        return x;
-    }
+    public Solution simulatedAnnealing(double initialTemperature, double coolingRate, int maxIteration) {
+        
+        // Inisialisasi Solusi Awal dengan Random yang di-seed
+        State currentState = new State(fireStation, rnd); 
+        double currentCost = objectiveFunction(currentState);
 
-    static double simulatedAnnealing(double t0, double cooling, double stopping_temp, double stepSize) {
-		System.out.println("Seed used: " + seed);
-		double currentX = clamp( MIN_X + rnd.nextDouble() * (MAX_X - MIN_X)); //posisi awal random		
-        double currentF = f(currentX);
-        double bestX = currentX;
-        double bestF = currentF;        
-        double T = t0;
-        while(true) {	//sampai lebih kecil dari stopping_temp atau bisa diiterasi juga
-			if (T < stopping_temp) break;
-            // successor state: "perturbation" via gaussian (mean = 0, deviasi = stepSize)
-			double successorX = clamp(currentX + rnd.nextGaussian() * stepSize); // getneighbor
-            double successorF = f(successorX);	//hitung f()-nya
-            double deltaE = successorF - currentF; 	//hitung delta
-            if ((deltaE>0) || (rnd.nextDouble() <= Math.exp(deltaE/T))) {	//kriteria acceptance 
-                currentX = successorX;	//pindah karena lebih baik
-                currentF = successorF;	
-				if (currentF > bestF) {  //simpan terbaik
-					bestF = currentF;  
-					bestX = currentX; 
-				}
+        State bestState = new State(currentState.getState(), fireStation, rnd); 
+        double bestCost = currentCost;
+
+        double T = initialTemperature; 
+        int iteration = 0;
+
+        // Cetak header log
+        System.out.println("-------------------------------------------------------------------------------------------------------");
+        System.out.printf("| %-8s | %-12s | %-15s | %-15s | %-15s | %-12s |%n", "Iterasi", "Suhu (T)", "Cost Saat Ini", "Cost Terbaik", "Delta E", "Aksi");
+        System.out.println("-------------------------------------------------------------------------------------------------------");
+        System.out.printf("| %-8d | %-12.5f | %-15.5f | %-15.5f | %-15.5f | %-12s |%n", 0, T, currentCost, bestCost, 0.0, "START");
+        System.out.println("-------------------------------------------------------------------------------------------------------");
+
+        while (iteration < maxIteration) {
+            // Generate Neighbor (menggunakan rnd yang di-seed)
+            State neighborState = currentState.generateNeighbor(); 
+            double neighborCost = objectiveFunction(neighborState);
+            double deltaE = neighborCost - currentCost; // Minimisasi: deltaE < 0 berarti lebih baik
+
+            String action = "DITOLAK";
+
+            // Kriteria Penerimaan SA (menggunakan rnd yang di-seed)
+            if (deltaE < 0 || rnd.nextDouble() < Math.exp(-deltaE / T)) {
+                currentState = neighborState;
+                currentCost = neighborCost;
+                action = "DITERIMA";
+                
+                // Update Solusi Terbaik Global
+                if (currentCost < bestCost) {
+                    bestCost = currentCost;
+                    bestState = new State(currentState.getState(), fireStation, rnd); 
+                    action = "TERIMA+BEST";
+                }
             }
-            T = T * cooling; //turunkan suhu 
-        }
-        //return currentX;
-		return bestX;
-    }
+            
+            T *= coolingRate;
 
-	//run: SA 100 0.999 0.0001 0.1 20
-    public static void main(String[] args) {
-		double starting_temp = Double.parseDouble(args[0]);
-		double cooling_rate = Double.parseDouble(args[1]);
-		double stopping_temp= Double.parseDouble(args[2]);
-		double stepSize = Double.parseDouble(args[3]);
-		int runs = Integer.parseInt(args[4]);
-		int i = 1;
-		double bestX = MIN_X;
-		double bestF = f(bestX);
-		while (i++<=runs) {		//lakukan sebanyak runs kali
-			System.out.printf("Run %d\n",i-1);
-			//hasil SA terbaik
-			double resX = simulatedAnnealing(starting_temp, cooling_rate, stopping_temp, stepSize);  
-			double resF = f(resX);	//dan f()-nya
-			System.out.printf("Simulated Annealing result x=%.6f f(x)=%.6f%n", resX, resF);
-			System.out.println("----------------------------------------------------------");
-			if (resF>bestF) { //simpan f(x) terbaik;
-				bestF = resF; 
-				bestX = resX; 
-			}			
-		}
-		
-		System.out.printf("Simulated Annealing best x=%.6f f(x)=%.6f%n", bestX, bestF);
+            // Cetak log iterasi
+            System.out.printf("| %-8d | %-12.5f | %-15.5f | %-15.5f | %-15.5f | %-12s |%n", 
+                iteration + 1, T, currentCost, bestCost, deltaE, action);
+            
+            iteration++;
+        }
+        System.out.println("-------------------------------------------------------------------------------------------------------");
+        System.out.println("PENCARIAN SELESAI. Total iterasi: " + maxIteration);
+        System.out.println("-------------------------------------------------------------------------------------------------------");
+        
+        return new Solution(bestState.getState(), bestCost);
     }
 }

@@ -53,12 +53,18 @@ public class FireStationGA {
             return Double.compare(this.fitness, other.fitness);
         }
     }
-    
+
+    //=================================================================================================================
+    //                                              KODE MULAI DARI SINI
+    //=================================================================================================================
     public static void main(String[] args) {
         FireStationGA ga = new FireStationGA();
         ga.run();
     }
-    
+
+    //read input dulu
+    //ngulang algo GA sebanyak REPETITION kali
+    //setiap kali ngulang nyimpen fitness populasi per generasi trs di export ke file biar bs di plot
     public void run() {
         readInput();
         
@@ -84,7 +90,8 @@ public class FireStationGA {
             System.err.println("Error writing output file: " + e.getMessage());
         }
     }
-    
+
+    //read input
     private void readInput() {
         Scanner scanner = new Scanner(System.in);
         
@@ -123,7 +130,8 @@ public class FireStationGA {
         
         scanner.close();
     }
-    
+
+    //algo GA jalan disini
     private List<Double> runGeneticAlgorithm(Random random) {
         List<Individual> population = initializePopulation(random);
         evaluatePopulation(population);
@@ -196,6 +204,7 @@ public class FireStationGA {
         return generationFitness;
     }
 
+    //ngitung fitness populasi
     private double getMeanPopulFitness(List<Individual> population) {
         double sum = 0;
         for(Individual individual: population){
@@ -203,7 +212,8 @@ public class FireStationGA {
         }
         return sum / POPULATION_SIZE;
     }
-    
+
+    //ngisi populasi pertama kali dengan individual 
     private List<Individual> initializePopulation(Random random) {
         List<Individual> population = new ArrayList<>();
         List<Integer> emptyPositions = getEmptyPositions();
@@ -240,7 +250,7 @@ public class FireStationGA {
         }
         return emptyPositions;
     }
-    
+
     private int coordToLinear(int x, int y) {
         return x * w + y + 1;
     }
@@ -251,7 +261,8 @@ public class FireStationGA {
         int y = linear % w;
         return new Position(x, y);
     }
-    
+
+    //set fitness individual 
     private void evaluatePopulation(List<Individual> population) {
         for (Individual individual : population) {
             individual.fitness = calculateFitness(individual.chromosome);
@@ -355,9 +366,9 @@ public class FireStationGA {
         }
         return copy;
     }
-    
+
+    // Roulette wheel selection
     private Individual selectParent(List<Individual> population, Random random) {
-        // Roulette wheel selection
         double totalFitness = 0;
         for (Individual individual : population) {
             totalFitness += 1.0 / (1.0 + individual.fitness); // Inverse for minimization
@@ -376,6 +387,9 @@ public class FireStationGA {
         return population.get(population.size() - 1);
     }
 
+    //select paranet pake RANK SELECTION
+    //nanti di uncomment
+    
     /* 
     private Individual selectParent(List<Individual> population, Random random) {
         // Rank selection: sort population by fitness and assign selection probabilities based on rank
@@ -417,7 +431,7 @@ public class FireStationGA {
         return sortedPopulation.get(populationSize - 1);
     }
         */
-    
+
     private Individual[] crossover(Individual parent1, Individual parent2, Random random) {
         int[] child1 = parent1.chromosome.clone();
         int[] child2 = parent2.chromosome.clone();
@@ -449,7 +463,9 @@ public class FireStationGA {
             }
         }
     }
-    
+
+    //mutasi sama crossover bisa bikin duplikat gene
+    //disini dibaikinnya
     private void repairChromosome(Individual individual, Random random) {
         Set<Integer> usedPositions = new HashSet<>();
         List<Integer> emptyPositions = getEmptyPositions();
@@ -492,4 +508,5 @@ public class FireStationGA {
             this.distance = distance;
         }
     }
+
 }

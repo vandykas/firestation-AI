@@ -76,21 +76,18 @@ public class FireStation {
     }
 
     public double getMinimumDistance(List<Position> fireStationPos) {
-        double minDist = 0;
-        for (Position pos : housePositions) {
-            minDist += bfs(pos.getX(), pos.getY(), fireStationPos);
+        Queue<Node> queue = new LinkedList<>();
+        for (Position fireStation : fireStationPos) {
+            queue.add(new Node(fireStation, 0));
         }
-        return minDist;
+        return bfs(fireStationPos, queue);
     }
 
-    private double bfs(int x, int y, List<Position> fireStationPos) {
+    private double bfs(List<Position> fireStationPos, Queue<Node> queue) {
         int[] moveX = {-1, 0, 1, 0};
         int[] moveY = {0, 1, 0, -1};
         boolean[][] visited = new boolean[rowSize][columnSize];
 
-        Queue<Node> queue = new LinkedList<>();
-        queue.add(new Node(new Position(x, y), 0));
-        boolean found = false;
         double dist = 0;
         while (!queue.isEmpty()) {
             Node node = queue.poll();
@@ -99,19 +96,12 @@ public class FireStation {
                 int newY = node.pos.getY() + moveY[i];
                 Position newPos = new Position(newX, newY);
                 Node newNode = new Node(newPos, node.dist + 1);
-                if (isInTheGrid(newX, newY) && !visited[newX][newY]) {
-                    if (!found && fireStationPos.contains(newPos)) {
-                        dist = newNode.dist;
-                        found = true;
+                if (isInTheGrid(newX, newY) && !visited[newX][newY] && grid[newX][newY] != CellStatus.TREE) {
+                    if (grid[newX][newY] == CellStatus.HOUSE) {
+                        dist += newNode.dist;
                     }
-                    else if (grid[newX][newY] == CellStatus.EMPTY) {
-                        visited[newX][newY] = true;
-                        queue.add(newNode);
-                    }
-                }
-
-                if (found) {
-                    break;
+                    visited[newX][newY] = true;
+                    queue.add(newNode);
                 }
             }
         }

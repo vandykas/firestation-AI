@@ -30,6 +30,9 @@ public class Main {
         }
     }
 
+    /*
+    Mengisi grid dengan input yang diberikan
+     */
     public static void fillCell(Scanner sc, FireStation fireStation, boolean isFillHouse, int size) {
         for (int i = 0; i < size; i++) {
             int x = sc.nextInt();
@@ -44,6 +47,9 @@ public class Main {
         }
     }
 
+    /*
+    Melakukan hill climbing dan menyimpan hasil pada objek Solution
+     */
     public static void doHillClimbing(FireStation fireStation) {
         HC myHillClimbing = new HC(fireStation);
         Solution result = myHillClimbing.randomRestartHillClimbing(50, 10);

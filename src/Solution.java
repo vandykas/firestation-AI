@@ -1,5 +1,8 @@
 import java.util.List;
 
+/*
+Kelas untuk mempermudah penyimpanan solusi yang ditemukan
+ */
 public class Solution implements Comparable<Solution> {
     private List<Position> fireStationPos;
     private double bestDistance;

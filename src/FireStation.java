@@ -75,15 +75,22 @@ public class FireStation {
         }
     }
 
+    /*
+    Mencari jarak minimal setiap rumah ke firestation menggunakan teknik
+    bfs multi source dengan sourcenya adalah semua firestation
+     */
     public double getMinimumDistance(List<Position> fireStationPos) {
         Queue<Node> queue = new LinkedList<>();
         for (Position fireStation : fireStationPos) {
             queue.add(new Node(fireStation, 0));
         }
-        return bfs(fireStationPos, queue);
+        return bfs(queue);
     }
 
-    private double bfs(List<Position> fireStationPos, Queue<Node> queue) {
+    /*
+    BFS multi source ke 4 arah dan memasukkan jarak jika bertemu rumah
+     */
+    private double bfs(Queue<Node> queue) {
         int[] moveX = {-1, 0, 1, 0};
         int[] moveY = {0, 1, 0, -1};
         boolean[][] visited = new boolean[rowSize][columnSize];

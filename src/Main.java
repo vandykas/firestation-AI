@@ -86,13 +86,16 @@ public class Main {
         
         List<Position> bestFireStationState = result.getFireStationPos();
 
-        // Output Final
+         // Output Final
         System.out.println("\n===== SOLUSI TERBAIK AKHIR =====");
         System.out.printf("%d %.5f%n", fireStation.getFireStationsCount(), result.getBestDistance());
+        int i =0;
         for (Position pos : bestFireStationState) {
             // Output dikembalikan ke 1-based (x+1, y+1)
-            System.out.printf("%d %d%n", pos.getX() + 1, pos.getY() + 1);
+            System.out.printf("posisi firestation %d : X :%d , Y :%d%n", i+1, pos.getX() + 1, pos.getY() + 1);
+            i++;
         }
         System.out.println("================================\n");
     }
 }
+    

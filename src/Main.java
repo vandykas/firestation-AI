@@ -54,11 +54,6 @@ public class Main {
         HC myHillClimbing = new HC(fireStation);
         Solution result = myHillClimbing.randomRestartHillClimbing(100, 100);
 //        Solution result = myHillClimbing.hillClimbing(1);
-        List<Position> bestFireStationState = result.getFireStationPos();
-
-        System.out.printf("%d %.5f\n", bestFireStationState.size(), result.getBestDistance());
-        for (Position position : bestFireStationState) {
-            System.out.println(position.getX() + " " + position.getY());
-        }
+        result.printSolution();
     }
 }

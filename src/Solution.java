@@ -32,4 +32,11 @@ public class Solution implements Comparable<Solution> {
     public int compareTo(Solution other) {
         return Double.compare(this.bestDistance, other.bestDistance);
     }
+
+    public void printSolution() {
+        System.out.printf("%d %.5f\n", fireStationPos.size(), bestDistance);
+        for (Position position : fireStationPos) {
+            System.out.println((position.getX() + 1) + " " + (position.getY() + 1));
+        }
+    }
 }

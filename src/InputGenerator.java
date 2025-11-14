@@ -122,8 +122,8 @@ public class InputGenerator {
                     if (grid[newX][newY] == 1) {
                         houseFound++;
                     }
-                    visited[newX][newY] = true;
                     queue.add(newPos);
+                    visited[newX][newY] = true;
                 }
             }
         }

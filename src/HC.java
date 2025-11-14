@@ -1,8 +1,12 @@
+import java.util.Random;
+
 public class HC {
     private final FireStation fireStation;
+    private final Random rand;
 
-    public HC(FireStation fireStation) {
+    public HC(FireStation fireStation, Random rand) {
         this.fireStation = fireStation;
+        this.rand = rand;
     }
 
     /*
@@ -32,7 +36,7 @@ public class HC {
     First-choice Hill Climbing.
      */
     public Solution hillClimbing(int maxIteration) {
-        State currentState = new State(fireStation);
+        State currentState = new State(fireStation, rand);
         Solution result = new Solution(currentState.getState(), costFunction(currentState));
         for (int i = 0; i < maxIteration; i++) {
             State neighborState = currentState.generateNeighbor();

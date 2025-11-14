@@ -53,7 +53,7 @@ public class Main {
      */
     public static void doHillClimbing(FireStation fireStation) {
         HC myHillClimbing = new HC(fireStation, new Random());
-        Solution result = myHillClimbing.randomRestartHillClimbing(100, 100);
+        Solution result = myHillClimbing.randomRestartHillClimbing(100, 10);
 //        Solution result = myHillClimbing.hillClimbing(1);
         result.printSolution();
     }

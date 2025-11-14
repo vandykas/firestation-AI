@@ -77,19 +77,20 @@ public class FireStation {
      */
     public double getMinimumDistance(List<Position> fireStationPos) {
         Queue<Node> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[rowSize][columnSize];
         for (Position fireStation : fireStationPos) {
             queue.add(new Node(fireStation, 0));
+            visited[fireStation.getX()][fireStation.getY()] = true;
         }
-        return bfs(queue);
+        return bfs(queue, visited);
     }
 
     /*
     BFS multi source ke 4 arah dan memasukkan jarak jika bertemu rumah
      */
-    private double bfs(Queue<Node> queue) {
+    private double bfs(Queue<Node> queue, boolean[][] visited) {
         int[] moveX = {-1, 0, 1, 0};
         int[] moveY = {0, 1, 0, -1};
-        boolean[][] visited = new boolean[rowSize][columnSize];
 
         double dist = 0;
         int houseFound = 0;

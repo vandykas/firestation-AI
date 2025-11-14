@@ -20,27 +20,16 @@ public class MySA {
         return cost / housePositionsCount;
     }
 
-    public Solution simulatedAnnealing(double initialTemperature, double coolingRate, double stoppingtemp) {
+    public Solution simulatedAnnealing(double T, double coolingRate, double stoppingtemp) {
         State currentState = new State(fireStation, rnd);
         double currentCost = objectiveFunction(currentState);
 
         State bestState = new State(fireStation, currentState.getState(), rnd);
         double bestCost = currentCost;
 
-        double T = initialTemperature;
 
-        // Cetak header log
-        System.out.println(
-                "-------------------------------------------------------------------------------------------------------");
-        System.out.printf("| %-12s | %-15s | %-15s |%n",  "Suhu (T)", "Cost Saat Ini",
-                "Cost Terbaik");
-        System.out.println(
-                "-------------------------------------------------------------------------------------------------------");
-        System.out.printf("| %-12.5f | %-15.5f | %-15.5f | %n",  T, currentCost, bestCost);
-        System.out.println(
-                "-------------------------------------------------------------------------------------------------------");
 
-        while(T>=stoppingtemp){
+        while(T >= stoppingtemp){
             State neighborState = currentState.generateNeighbor();
             double neighborCost = objectiveFunction(neighborState);
             double deltaE = neighborCost - currentCost; // Minimisasi: deltaE < 0 berarti lebih baik
@@ -62,19 +51,16 @@ public class MySA {
     }
 
     public Solution iteration(double initialTemperature, double coolingRate, double stoppingtemp, int maxIteration) {
-        int i = 1;
         Solution temp1;
-        Solution temp2 = new Solution(null, Double.MAX_VALUE);
+        Solution result = new Solution(null, Double.MAX_VALUE);
         double T = initialTemperature;
-        for (; i < maxIteration; i++) {
-            System.out.println();
-            System.out.printf("| %-15s  %d |%n",   "Iterari ke-",i+1);
+        for (int i = 0; i < maxIteration; i++) {
             temp1 = simulatedAnnealing(T, coolingRate, stoppingtemp);
-            T--;
-            if(temp2.compareTo(temp1)>0){
-                temp2=temp1;
+            if(result.compareTo(temp1) > 0){
+                result = temp1;
             }
+            System.out.printf("Run: %d best distance: %.5f\n", i + 1, result.getBestDistance());
         }
-        return temp2;
+        return result;
     }
 }

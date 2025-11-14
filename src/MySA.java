@@ -73,9 +73,9 @@ public class MySA {
         Solution temp1;
         Solution temp2 = new Solution(null, Double.MAX_VALUE);
         double T = initialTemperature;
-        for (; i < maxIteration; i++) {
+        for (; i <= maxIteration; i++) {
             System.out.println();
-            System.out.printf("| %-15s  %d |%n",   "Iterari ke-",i+1);
+            System.out.printf("| %-15s  %d |%n",   "Iterari ke-",i);
             temp1 = simulatedAnnealing(T, coolingRate, stoppingtemp);
             T--;
             if(temp2.compareTo(temp1)>0){

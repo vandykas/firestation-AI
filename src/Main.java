@@ -11,33 +11,42 @@ public class Main {
         long seedValue; 
         
         // 1. Cek Argumen Fleksibel (4 atau 5)
-        if (args.length == 4) {
-            // Mode 1: AUTO-SEED (4 Argumen)
-            seedValue = System.currentTimeMillis();
-            System.out.printf("MODE: AUTO-SEED. Seed yang Dihasilkan: %d%n", seedValue);
-        } else if (args.length == 5) {
-            // Mode 2: REPLIKASI SEED (5 Argumen)
-            seedValue = Long.parseLong(args[4]);
-            System.out.printf("MODE: REPLIKASI. Seed yang Digunakan: %d%n", seedValue);
-        } else {
-            // ERROR: Jumlah argumen salah
-            System.out.println("Penggunaan Program:");
-            System.out.println("1. AUTO-SEED:   java Main [file] [T0] [alpha] [maxIter]");
-            System.out.println("2. REPLIKASI:   java Main [file] [T0] [alpha] [maxIter] [seed]");
-            return;
-        }
+        // if (args.length == 4) {
+        //     // Mode 1: AUTO-SEED (4 Argumen)
+        //     seedValue = System.currentTimeMillis();
+        //     System.out.printf("MODE: AUTO-SEED. Seed yang Dihasilkan: %d%n", seedValue);
+        // } else if (args.length == 5) {
+        //     // Mode 2: REPLIKASI SEED (5 Argumen)
+        //     seedValue = Long.parseLong(args[4]);
+        //     System.out.printf("MODE: REPLIKASI. Seed yang Digunakan: %d%n", seedValue);
+        // } else{
+        //     return;
+        // }
 
         // Ambil hyperparameter SA 
-        double initialTemp = Double.parseDouble(args[1]);
-        double coolingRate = Double.parseDouble(args[2]);
-        int maxIteration = Integer.parseInt(args[3]);
-        
+        double initialTemp =0;
+        double coolingRate =0;
+        double stoppingTemp =0;
+        int runs =0;
+        System.out.println("hello world");
         // Membuat SATU objek Random yang di-seed
-        Random seededRnd = new Random(seedValue);
+        Random seededRnd = new Random();
 
-        File file = new File(args[0]);
+        File fileParam = new File(args[0]);
+        File fileInput = new File(args[1]);
+
         try {
-            Scanner sc = new Scanner(file);
+            Scanner sc = new Scanner(fileParam);
+            initialTemp = sc.nextDouble();
+            coolingRate = sc.nextDouble();
+            stoppingTemp = sc.nextDouble();
+            runs = sc.nextInt();
+
+        }  catch (FileNotFoundException e) {
+            System.out.println("File " + args[0] + " not found!");
+        }
+        try {
+            Scanner sc = new Scanner(fileInput);
             int m = sc.nextInt();
             int n = sc.nextInt();
             int fireStationsCount = sc.nextInt();
@@ -51,7 +60,7 @@ public class Main {
             fillCell(sc, fireStation, false, treeCount);  // Membaca Pohon
             
             // Panggil Simulated Annealing dengan objek Random yang di-seed
-            doSimulatedAnnealing(fireStation, initialTemp, coolingRate, maxIteration, seededRnd);
+            doSimulatedAnnealing(fireStation, initialTemp, coolingRate, stoppingTemp ,runs, seededRnd);
             
         }
         catch (FileNotFoundException e) {
@@ -78,11 +87,12 @@ public class Main {
     }
 
     // Mengubah parameter 'long seed' menjadi 'Random seededRnd'
-    public static void doSimulatedAnnealing(FireStation fireStation, double initialTemp, double coolingRate, int maxIter, Random seededRnd) {
+    public static void doSimulatedAnnealing(FireStation fireStation, double initialTemp, double coolingRate,double stoppingTemp, int maxIter, Random seededRnd) {
         // Kirim objek Random yang di-seed ke MySA
+        
         MySA mySimulatedAnnealing = new MySA(fireStation, seededRnd);
         
-        Solution result = mySimulatedAnnealing.simulatedAnnealing(initialTemp, coolingRate, maxIter);
+        Solution result = mySimulatedAnnealing.iteration(initialTemp, coolingRate, stoppingTemp, maxIter);
         
         List<Position> bestFireStationState = result.getFireStationPos();
 

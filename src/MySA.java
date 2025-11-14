@@ -2,79 +2,89 @@ import java.util.Random;
 
 public class MySA {
     private final FireStation fireStation;
-    private final Random rnd; 
+    private final Random rnd;
 
     // Menerima objek Random yang sudah di-seed (dari Main)
-    public MySA(FireStation fireStation, Random seededRnd) { 
+    public MySA(FireStation fireStation, Random seededRnd) {
         this.fireStation = fireStation;
-        this.rnd = seededRnd; 
+        this.rnd = seededRnd;
     }
-    
+
     /**
-     * Fungsi Objektif: Sama dengan yang dipakai HC. 
+     * Fungsi Objektif: Sama dengan yang dipakai HC.
      * Meminimalkan rata-rata jarak terdekat dari semua rumah
      * ke Fire Station terdekat.
      */
     private double objectiveFunction(State currentState) {
         // fireStation.getMinimumDistance mengembalikan total jarak minimum (cost)
-        double cost = fireStation.getMinimumDistance(currentState.getState()); 
+        double cost = fireStation.getMinimumDistance(currentState.getState());
         int housePositionsCount = fireStation.getHousePositionsCount();
         return cost / housePositionsCount; // Rata-rata jarak minimum
     }
 
-    public Solution simulatedAnnealing(double initialTemperature, double coolingRate, int maxIteration) {
-        
+    public Solution simulatedAnnealing(double initialTemperature, double coolingRate, double stoppingtemp) {
+
         // Inisialisasi Solusi Awal dengan Random yang di-seed
-        State currentState = new State(fireStation, rnd); 
+        State currentState = new State(fireStation, rnd);
         double currentCost = objectiveFunction(currentState);
 
-        State bestState = new State(currentState.getState(), fireStation, rnd); 
+        State bestState = new State(currentState.getState(), fireStation, rnd);
         double bestCost = currentCost;
 
-        double T = initialTemperature; 
-        int iteration = 0;
+        double T = initialTemperature;
 
         // Cetak header log
-        System.out.println("-------------------------------------------------------------------------------------------------------");
-        System.out.printf("| %-8s | %-12s | %-15s | %-15s | %-15s | %-12s |%n", "Iterasi", "Suhu (T)", "Cost Saat Ini", "Cost Terbaik", "Delta E", "Aksi");
-        System.out.println("-------------------------------------------------------------------------------------------------------");
-        System.out.printf("| %-8d | %-12.5f | %-15.5f | %-15.5f | %-15.5f | %-12s |%n", 0, T, currentCost, bestCost, 0.0, "START");
-        System.out.println("-------------------------------------------------------------------------------------------------------");
+        System.out.println(
+                "-------------------------------------------------------------------------------------------------------");
+        System.out.printf("| %-12s | %-15s | %-15s |%n",  "Suhu (T)", "Cost Saat Ini",
+                "Cost Terbaik");
+        System.out.println(
+                "-------------------------------------------------------------------------------------------------------");
+        System.out.printf("| %-12.5f | %-15.5f | %-15.5f | %n",  T, currentCost, bestCost);
+        System.out.println(
+                "-------------------------------------------------------------------------------------------------------");
 
-        while (iteration < maxIteration) {
+        while(T>=stoppingtemp){
             // Generate Neighbor (menggunakan rnd yang di-seed)
-            State neighborState = currentState.generateNeighbor(); 
+            State neighborState = currentState.generateNeighbor();
             double neighborCost = objectiveFunction(neighborState);
             double deltaE = neighborCost - currentCost; // Minimisasi: deltaE < 0 berarti lebih baik
 
-            String action = "DITOLAK";
+            
 
             // Kriteria Penerimaan SA (menggunakan rnd yang di-seed)
             if (deltaE < 0 || rnd.nextDouble() < Math.exp(-deltaE / T)) {
                 currentState = neighborState;
                 currentCost = neighborCost;
-                action = "DITERIMA";
-                
                 // Update Solusi Terbaik Global
                 if (currentCost < bestCost) {
                     bestCost = currentCost;
-                    bestState = new State(currentState.getState(), fireStation, rnd); 
-                    action = "TERIMA+BEST";
+                    bestState = new State(currentState.getState(), fireStation, rnd);
                 }
             }
-            
-            T *= coolingRate;
 
-            // Cetak log iterasi
-            System.out.printf("| %-8d | %-12.5f | %-15.5f | %-15.5f | %-15.5f | %-12s |%n", 
-                iteration + 1, T, currentCost, bestCost, deltaE, action);
-            
-            iteration++;
+            T *= coolingRate;
         }
-        System.out.println("-------------------------------------------------------------------------------------------------------");
-        System.out.println("PENCARIAN SELESAI. Total iterasi: " + maxIteration);
-        System.out.println("-------------------------------------------------------------------------------------------------------");
-        
         return new Solution(bestState.getState(), bestCost);
+    }
+
+    public Solution iteration(double initialTemperature, double coolingRate, double stoppingtemp, int maxIteration) {
+        int i = 1;
+        Solution temp1;
+        Solution temp2 = new Solution(null, Double.MAX_VALUE);
+        double T = initialTemperature;
+        for (; i < maxIteration; i++) {
+            System.out.println();
+            System.out.printf("| %-15s  %d |%n",   "Iterari ke-",i+1);
+            temp1 = simulatedAnnealing(T, coolingRate, stoppingtemp);
+            T--;
+            if(temp2.compareTo(temp1)>0){
+                temp2=temp1;
+            }
+        }
+        
+        
+
+        return temp2;
     }
 }

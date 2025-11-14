@@ -52,7 +52,7 @@ public class Main {
      */
     public static void doHillClimbing(FireStation fireStation) {
         HC myHillClimbing = new HC(fireStation);
-        Solution result = myHillClimbing.randomRestartHillClimbing(10, 10);
+        Solution result = myHillClimbing.randomRestartHillClimbing(100, 100);
 //        Solution result = myHillClimbing.hillClimbing(1);
         List<Position> bestFireStationState = result.getFireStationPos();
 

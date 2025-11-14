@@ -23,16 +23,23 @@ public class InputGenerator {
     public static void writeInput(BufferedWriter bw, int m, int n) throws IOException {
         bw.write(m + " " + n + "\n");
         Random rand = new Random();
+
+        // Jumlah rumah 15 - 20 persen total cell
         int minHousePercent = 15, maxHousePercent = 20;
         int h = (int) ((rand.nextInt((maxHousePercent - minHousePercent + 1)) + minHousePercent) / 100.0 * m * n);
 
+        // Jumlah pohon 20 - 25 persen total cell
         int minTreePercent = 20, maxTreePercent = 25;
         int t = (int) ((rand.nextInt((maxTreePercent - minTreePercent + 1)) + minTreePercent) / 100.0 * m * n);
 
+        // Jumlah fire station 15 - 25 persen total cell
         int minFirestation = 15, maxFireStation = 25;
         int p = h / (rand.nextInt((maxFireStation - minFirestation + 1)) + minFirestation);
         bw.write(p + " " + h + " " + t + "\n");
 
+        // Tempatkan pohon dan rumah secara random namun tetap memastikan tidak menimpa
+        // satu sama lain. Cek hasil penempatan dengan bfs untuk memastikan ada cell kosong
+        // yang bisa mencapai setiap rumah pada grid.
         List<Position> housePlacement, treePlacement;
         int[][] grid;
         do {
@@ -42,11 +49,14 @@ public class InputGenerator {
             treePlacement = generatePosition(rand, positionAdded, m, n, t);
             placeInGrid(grid, housePlacement, treePlacement);
         }
-        while (placementNotValid(housePlacement.getFirst(), grid, m, n, h));
+        while (placementNotValid(grid, m, n, h));
 
         writeToTextFile(bw, housePlacement, treePlacement);
     }
 
+    /*
+    Menempatkan rumah dan pohon secara random tanpa menimpa cell yang sama
+     */
     public static List<Position> generatePosition(Random rand, TreeSet<String> positionAdded,
                                         int m, int n, int size) {
         List<Position> placement = new ArrayList<>(size);
@@ -63,6 +73,9 @@ public class InputGenerator {
         return placement;
     }
 
+    /*
+    Memasukkan pohon dan rumah yang telah ditaruh ke dalam grid
+     */
     public static void placeInGrid(int[][] grid, List<Position> housePosition, List<Position> treePosition) {
         for (Position pos : housePosition) {
             grid[pos.getX()][pos.getY()] = 1;
@@ -72,20 +85,33 @@ public class InputGenerator {
         }
     }
 
-    public static boolean placementNotValid(Position housePosition, int[][] grid, int m, int n, int houseCount) {
-        int houseFound = bfs(grid, housePosition, m, n);
+    /*
+    Mengecek apakah setiap rumah dapat dicapai dari cell kosong
+     */
+    public static boolean placementNotValid(int[][] grid, int m, int n, int houseCount) {
+        int houseFound = 0;
+        boolean[][] visited = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0 && !visited[i][j]) {
+                    houseFound += bfs(grid, new Position(i, j), m, n, visited);
+                }
+            }
+        }
         return houseFound < houseCount;
     }
 
-    public static int bfs(int[][] grid, Position startingPos, int m, int n) {
+    /*
+    Flood fill dengan source cell kosong yang belum pernah dikunjungi, lalu hitung rumah yang ditemukan
+     */
+    public static int bfs(int[][] grid, Position startingPos, int m, int n, boolean[][] visited) {
         int[] moveX = {-1, 0, 1, 0};
         int[] moveY = {0, 1, 0, -1};
-        boolean[][] visited = new boolean[m][n];
         visited[startingPos.getX()][startingPos.getY()] = true;
 
         Queue<Position> queue = new LinkedList<>();
         queue.add(startingPos);
-        int houseFound = 1;
+        int houseFound = 0;
         while (!queue.isEmpty()) {
             Position currentPos = queue.poll();
             for (int i = 0; i < 4; i++) {

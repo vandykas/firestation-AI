@@ -5,9 +5,8 @@ import java.util.Queue;
 
 public class FireStation {
     private final CellStatus[][] grid;
-    private final List<Position> housePositions;
-    private final List<Position> treePositions;
     private final int fireStationsCount;
+    private int houseCount;
     private final int rowSize;
     private final int columnSize;
 
@@ -21,8 +20,6 @@ public class FireStation {
         this.rowSize = rowSize;
         this.columnSize = columnSize;
         this.fireStationsCount = fireStationsCount;
-        this.housePositions = new ArrayList<>();
-        this.treePositions = new ArrayList<>();
         this.grid = new CellStatus[rowSize][columnSize];
         for (int i = 0; i < rowSize; i++) {
             for (int j = 0; j < columnSize; j++) {
@@ -43,18 +40,17 @@ public class FireStation {
         return fireStationsCount;
     }
 
-    public int getHousePositionsCount() {
-        return housePositions.size();
+    public int getHouseCount() {
+        return houseCount;
     }
 
     public void addHouseToGrid(int x, int y) {
         grid[x][y] = CellStatus.HOUSE;
-        housePositions.add(new Position(x,y));
+        houseCount++;
     }
 
     public void addTreeToGrid(int x, int y) {
         grid[x][y] = CellStatus.TREE;
-        treePositions.add(new Position(x,y));
     }
 
     public boolean isEmpty(int x, int y) {
@@ -96,8 +92,10 @@ public class FireStation {
         boolean[][] visited = new boolean[rowSize][columnSize];
 
         double dist = 0;
+        int houseFound = 0;
         while (!queue.isEmpty()) {
             Node node = queue.poll();
+            visited[node.pos.getX()][node.pos.getY()] = true;
             for (int i = 0; i < 4; i++) {
                 int newX = node.pos.getX() + moveX[i];
                 int newY = node.pos.getY() + moveY[i];
@@ -106,12 +104,17 @@ public class FireStation {
                 if (isInTheGrid(newX, newY) && !visited[newX][newY] && grid[newX][newY] != CellStatus.TREE) {
                     if (grid[newX][newY] == CellStatus.HOUSE) {
                         dist += newNode.dist;
+                        houseFound++;
                     }
                     visited[newX][newY] = true;
                     queue.add(newNode);
                 }
             }
         }
-        return dist;
+
+        if (houseFound == houseCount) {
+            return dist;
+        }
+        return Integer.MAX_VALUE;
     }
 }

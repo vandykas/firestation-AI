@@ -13,12 +13,14 @@ public class HC {
     public Solution randomRestartHillClimbing(int maxIteration, int restartCount) {
         Solution result = new Solution(null, Double.MAX_VALUE);
         for (int i = 0; i < restartCount; i++) {
+//            double startTime = System.currentTimeMillis();
             Solution resultFound = hillClimbing(maxIteration);
             if (resultFound.compareTo(result) < 0) {
                 result.setBestDistance(resultFound.getBestDistance());
                 result.setFireStationPos(resultFound.getFireStationPos());
             }
             System.out.printf("Run: %d best distance: %.5f\n", i + 1, result.getBestDistance());
+//            System.out.printf("Time: %.2f\n\n", System.currentTimeMillis() - startTime);
         }
         return result;
     }
@@ -52,7 +54,7 @@ public class HC {
      */
     private double costFunction(State currentState) {
         double cost = fireStation.getMinimumDistance(currentState.getState());
-        int housePositionsCount = fireStation.getHousePositionsCount();
+        int housePositionsCount = fireStation.getHouseCount();
         return cost / housePositionsCount;
     }
 }

@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner; // Wajib di-import
+import java.util.Scanner;
 
 public class MainSA {
 
@@ -12,25 +12,25 @@ public class MainSA {
 
         seedValue = System.currentTimeMillis();
         
-        
         // Ambil hyperparameter SA
         double initialTemp = 0;
         double coolingRate = 0;
         double stoppingTemp = 0;
         int runs = 0;
         
-
         // Membuat SATU objek Random yang di-seed jika ingin menggunakan seed yang sudah ada
         // tinggal diganti seedvalue dengan variabel seed sebelum ,dan diganti isi dari variabel
         // seedsebelum dengan seed yang ingin dipakai
         // WARNING : tambahkan l di belakang seed untuk ngubah integer jadi long
-        Long seedSebelum = 1763115175266l;
-        Random seededRnd = new Random(seedSebelum);
+        long seedSebelum = 1763116683108l;
+        Random seededRnd ;
         System.out.println();
         if (seedSebelum != -1) {
+            seededRnd = new Random(seedSebelum);
             System.out.printf("Seed yang Digunakan: %d%n", seedSebelum);
         }
         else{
+            seededRnd= new Random(seedValue);
             System.out.printf("Seed yang Digunakan: %d%n", seedValue);
         }
 
@@ -47,6 +47,7 @@ public class MainSA {
         } catch (FileNotFoundException e) {
             System.out.println("File " + args[0] + " not found!");
         }
+
         try {
             Scanner sc = new Scanner(fileInput);
             int m = sc.nextInt();

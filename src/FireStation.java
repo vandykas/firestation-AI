@@ -5,9 +5,8 @@ import java.util.Queue;
 
 public class FireStation {
     private final CellStatus[][] grid;
-    private final List<Position> housePositions;
-    private final List<Position> treePositions;
     private final int fireStationsCount;
+    private int houseCount;
     private final int rowSize;
     private final int columnSize;
 
@@ -21,8 +20,6 @@ public class FireStation {
         this.rowSize = rowSize;
         this.columnSize = columnSize;
         this.fireStationsCount = fireStationsCount;
-        this.housePositions = new ArrayList<>();
-        this.treePositions = new ArrayList<>();
         this.grid = new CellStatus[rowSize][columnSize];
         for (int i = 0; i < rowSize; i++) {
             for (int j = 0; j < columnSize; j++) {
@@ -43,18 +40,17 @@ public class FireStation {
         return fireStationsCount;
     }
 
-    public int getHousePositionsCount() {
-        return housePositions.size();
+    public int getHouseCount() {
+        return houseCount;
     }
 
     public void addHouseToGrid(int x, int y) {
         grid[x][y] = CellStatus.HOUSE;
-        housePositions.add(new Position(x,y));
+        houseCount++;
     }
 
     public void addTreeToGrid(int x, int y) {
         grid[x][y] = CellStatus.TREE;
-        treePositions.add(new Position(x,y));
     }
 
     public boolean isEmpty(int x, int y) {
@@ -75,46 +71,50 @@ public class FireStation {
         }
     }
 
+    /*
+    Mencari jarak minimal setiap rumah ke firestation menggunakan teknik
+    bfs multi source dengan sourcenya adalah semua firestation
+     */
     public double getMinimumDistance(List<Position> fireStationPos) {
-        double minDist = 0;
-        for (Position pos : housePositions) {
-            minDist += bfs(pos.getX(), pos.getY(), fireStationPos);
+        Queue<Node> queue = new LinkedList<>();
+        for (Position fireStation : fireStationPos) {
+            queue.add(new Node(fireStation, 0));
         }
-        return minDist;
+        return bfs(queue);
     }
 
-    private double bfs(int x, int y, List<Position> fireStationPos) {
+    /*
+    BFS multi source ke 4 arah dan memasukkan jarak jika bertemu rumah
+     */
+    private double bfs(Queue<Node> queue) {
         int[] moveX = {-1, 0, 1, 0};
         int[] moveY = {0, 1, 0, -1};
         boolean[][] visited = new boolean[rowSize][columnSize];
 
-        Queue<Node> queue = new LinkedList<>();
-        queue.add(new Node(new Position(x, y), 0));
-        boolean found = false;
         double dist = 0;
+        int houseFound = 0;
         while (!queue.isEmpty()) {
             Node node = queue.poll();
+            visited[node.pos.getX()][node.pos.getY()] = true;
             for (int i = 0; i < 4; i++) {
                 int newX = node.pos.getX() + moveX[i];
                 int newY = node.pos.getY() + moveY[i];
                 Position newPos = new Position(newX, newY);
                 Node newNode = new Node(newPos, node.dist + 1);
-                if (isInTheGrid(newX, newY) && !visited[newX][newY]) {
-                    if (!found && fireStationPos.contains(newPos)) {
-                        dist = newNode.dist;
-                        found = true;
+                if (isInTheGrid(newX, newY) && !visited[newX][newY] && grid[newX][newY] != CellStatus.TREE) {
+                    if (grid[newX][newY] == CellStatus.HOUSE) {
+                        dist += newNode.dist;
+                        houseFound++;
                     }
-                    else if (grid[newX][newY] == CellStatus.EMPTY) {
-                        visited[newX][newY] = true;
-                        queue.add(newNode);
-                    }
-                }
-
-                if (found) {
-                    break;
+                    visited[newX][newY] = true;
+                    queue.add(newNode);
                 }
             }
         }
-        return dist;
+
+        if (houseFound == houseCount) {
+            return dist;
+        }
+        return Integer.MAX_VALUE;
     }
 }

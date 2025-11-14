@@ -18,7 +18,7 @@ public class MySA {
     private double objectiveFunction(State currentState) {
         // fireStation.getMinimumDistance mengembalikan total jarak minimum (cost)
         double cost = fireStation.getMinimumDistance(currentState.getState());
-        int housePositionsCount = fireStation.getHousePositionsCount();
+        int housePositionsCount = fireStation.getHouseCount();
         return cost / housePositionsCount; // Rata-rata jarak minimum
     }
 
@@ -73,7 +73,7 @@ public class MySA {
         Solution temp1;
         Solution temp2 = new Solution(null, Double.MAX_VALUE);
         double T = initialTemperature;
-        for (; i <= maxIteration; i++) {
+        for (; i <=maxIteration; i++) {
             System.out.println();
             System.out.printf("| %-15s  %d |%n",   "Iterari ke-",i);
             temp1 = simulatedAnnealing(T, coolingRate, stoppingtemp);

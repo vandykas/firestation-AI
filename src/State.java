@@ -27,6 +27,10 @@ public class State {
         return state;
     }
 
+    /*
+    Membuat state awal secara random. Pengambilan posisi akan diulang terus
+    selama belum valid
+     */
     public void generateStartingState() {
         int x, y;
         Position fireStationPos;
@@ -41,6 +45,11 @@ public class State {
         }
     }
 
+    /*
+    Membuat state tetangga dengan memilih 1 fire station dan arahnya (atas, kanan, bawah, kiri)
+    secara acak. Tetangga hanya mengubah 1 fire station ke 4 arah agar tidak terlalu jauh dari state
+    sekarang (memperbanyak eksploitasi ketimbang eksplorasi)
+     */
     public State generateNeighbor() {
         int[] moveX = {-1, 0, 1, 0};
         int[] moveY = {0, 1, 0, -1};

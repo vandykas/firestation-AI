@@ -12,6 +12,7 @@ public class MainSA {
 
         seedValue = System.currentTimeMillis();
         
+        
         // Ambil hyperparameter SA
         double initialTemp = 0;
         double coolingRate = 0;

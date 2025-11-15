@@ -32,7 +32,7 @@ public class MainGA {
             FireStation fireStation = new FireStation(m, n, fireStationsCount);
             fillCell(sc, fireStation, true, houseCount);
             fillCell(sc, fireStation, false, treeCount);
-            doGenAlgo(fireStation, totalGeneration, maxPopulationSize, crossoverRate, mutationRate, elitismPct);
+            doGenAlgo(fireStation, totalGeneration, maxPopulationSize, crossoverRate, mutationRate, elitismPct, convergence_window, convergence_treshold);
         }
         catch (FileNotFoundException e) {
             System.out.println("File " + args[0] + " not found!");
@@ -60,10 +60,11 @@ public class MainGA {
     Melakukan algoritma genetik dan menyimpan individu terbaik yang ditemukan
      */
     public static void doGenAlgo(FireStation fireStation, int totalGeneration, int maxPopulationSize,
-                                 double crossoverRate, double mutationRate, double elitismPct) {
-        GA myGeneticAlgo = new GA(fireStation, totalGeneration, maxPopulationSize, crossoverRate, mutationRate, elitismPct, new Random());
+                                 double crossoverRate, double mutationRate, double elitismPct, double convergence_window, double convergence_treshold) {
+        GA myGeneticAlgo = new GA(fireStation, totalGeneration, maxPopulationSize, crossoverRate, mutationRate, elitismPct, new Random(), convergence_window, convergence_treshold);
         Individual result = myGeneticAlgo.runGenAlgo();
         result.printResult(fireStation.getEmptyPosition());
     }
 
 }
+

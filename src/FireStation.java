@@ -5,6 +5,7 @@ import java.util.Queue;
 
 public class FireStation {
     private final CellStatus[][] grid;
+    private List<Position> emptyPositions;
     private final int fireStationsCount;
     private int houseCount;
     private final int rowSize;
@@ -44,6 +45,20 @@ public class FireStation {
         return houseCount;
     }
 
+    public List<Position> getEmptyPosition() {
+        if (emptyPositions == null) {
+            this.emptyPositions = new ArrayList<>();
+            for (int i = 0; i < rowSize; i++) {
+                for (int j = 0; j < columnSize; j++) {
+                    if (isEmpty(i, j)) {
+                        emptyPositions.add(new Position(i, j));
+                    }
+                }
+            }
+        }
+        return this.emptyPositions;
+    }
+
     public void addHouseToGrid(int x, int y) {
         grid[x][y] = CellStatus.HOUSE;
         houseCount++;
@@ -61,7 +76,7 @@ public class FireStation {
         return x >= 0 && x < rowSize && y >= 0 && y < columnSize;
     }
 
-    class Node {
+    static class Node {
         Position pos;
         int dist;
 

@@ -19,7 +19,7 @@ public class MainGA {
             double crossoverRate = sc.nextDouble();
             double mutationRate = sc.nextDouble();
             double elitismPct = sc.nextDouble();
-            double convergence_window = sc.nextDouble();
+            int convergence_window = sc.nextInt();
             double convergence_treshold = sc.nextDouble();
 
             sc = new Scanner(grid);
@@ -60,7 +60,7 @@ public class MainGA {
     Melakukan algoritma genetik dan menyimpan individu terbaik yang ditemukan
      */
     public static void doGenAlgo(FireStation fireStation, int totalGeneration, int maxPopulationSize,
-                                 double crossoverRate, double mutationRate, double elitismPct, double convergence_window, double convergence_treshold) {
+                                 double crossoverRate, double mutationRate, double elitismPct, int convergence_window, double convergence_treshold) {
         GA myGeneticAlgo = new GA(fireStation, totalGeneration, maxPopulationSize, crossoverRate, mutationRate, elitismPct, new Random(), convergence_window, convergence_treshold);
         Individual result = myGeneticAlgo.runGenAlgo();
         result.printResult(fireStation.getEmptyPosition());

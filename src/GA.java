@@ -8,10 +8,10 @@ public class GA {
     private final double mutationRate;
     private final double crossOverRate;
     private final double elitismPct;
-    private final double convergence_treshold;
-    private final int convergence_window;
+    private final double convergenceThreshold;
+    private final int convergenceWindow;
 
-    public GA(FireStation fireStation, int totalGeneration, int maxPopulationSize, double mutationRate, double crossOverRate, double elitismPct, Random rand, double convergence_treshold, double convergence_window) {
+    public GA(FireStation fireStation, int totalGeneration, int maxPopulationSize, double mutationRate, double crossOverRate, double elitismPct, Random rand, int convergenceWindow, double convergenceThreshold) {
         this.fireStation = fireStation;
         this.totalGeneration = totalGeneration;
         this.maxPopulationSize = maxPopulationSize;
@@ -19,8 +19,8 @@ public class GA {
         this.crossOverRate = crossOverRate;
         this.elitismPct = elitismPct;
         this.rand = rand;
-        this.convergence_window = convergence_window;
-        this.convergence_treshold = convergence_treshold;
+        this.convergenceWindow = convergenceWindow;
+        this.convergenceThreshold = convergenceThreshold;
     }
 
     public Individual runGenAlgo() {
@@ -29,7 +29,7 @@ public class GA {
         population.evaluatePopulationCost();
         population.sortPopulation();
 
-        double[] recentFitness = new double[CONVERGENCE_WINDOW];
+        double[] recentFitness = new double[convergenceWindow];
         int convergenceCounter = 0;
 
         for (int generation = 1; generation <= totalGeneration; generation++) {
@@ -66,10 +66,10 @@ public class GA {
             double meanPopulFitness = population.getMeanPopulationCost();
 
             // Check convergence
-            recentFitness[convergenceCounter % CONVERGENCE_WINDOW] = meanPopulFitness;
+            recentFitness[convergenceCounter % convergenceWindow] = meanPopulFitness;
             convergenceCounter++;
 
-            if (convergenceCounter >= CONVERGENCE_WINDOW) {
+            if (convergenceCounter >= convergenceWindow) {
                 double minFitness = Double.MAX_VALUE;
                 double maxFitness = Double.MIN_VALUE;
 
@@ -78,7 +78,7 @@ public class GA {
                     maxFitness = Math.max(maxFitness, fitness);
                 }
 
-                if (maxFitness - minFitness < CONVERGENCE_THRESHOLD) {
+                if (maxFitness - minFitness < convergenceThreshold) {
                     System.out.println("Converged at generation " + generation);
                     break;
                 }

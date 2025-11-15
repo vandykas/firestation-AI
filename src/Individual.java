@@ -45,6 +45,9 @@ public class Individual implements Comparable<Individual> {
         return new Individual[]{new Individual(rand, child1), new Individual(rand, child2)};
     }
 
+    /*
+    Mutasi alel dengan rate sebesar mutationRate
+     */
     public void mutate(List<Position> emptyPositions, double mutationRate) {
         for (int i = 0; i < chromosome.length; i++) {
             if (rand.nextDouble() < mutationRate) {

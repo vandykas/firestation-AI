@@ -29,8 +29,6 @@ public class GA {
         population.evaluatePopulationCost();
         population.sortPopulation();
 
-        List<Double> generationFitness = new ArrayList<>();
-
         double[] recentFitness = new double[CONVERGENCE_WINDOW];
         int convergenceCounter = 0;
 
@@ -39,15 +37,17 @@ public class GA {
             nextPop.initPopulationWithElitism();
 
             while (nextPop.getPopulationSize() < maxPopulationSize) {
-                Individual parent1 = population.selectParent();
-                Individual parent2 = population.selectParent();
+                Individual parent1 = population.selectParentRank();
+                Individual parent2 = population.selectParentRank();
 
                 if (rand.nextDouble() < crossOverRate) {
                     Individual[] children = parent1.crossover(parent2);
 
+                    // Coba mutasi kedua anak
                     children[0].mutate(fireStation.getEmptyPosition(), mutationRate);
                     children[1].mutate(fireStation.getEmptyPosition(), mutationRate);
 
+                    // Perbaiki kromosom karena bisa terjadi duplikat akibat kawin silang
                     children[0].repairChromosome(fireStation.getFireStationsCount());
                     children[1].repairChromosome(fireStation.getFireStationsCount());
 
@@ -64,7 +64,6 @@ public class GA {
             System.out.printf("Generation: %d best distance: %.5f\n", generation, population.getBestIndividual().getCost());
 
             double meanPopulFitness = population.getMeanPopulationCost();
-            generationFitness.add(meanPopulFitness);
 
             // Check convergence
             recentFitness[convergenceCounter % CONVERGENCE_WINDOW] = meanPopulFitness;

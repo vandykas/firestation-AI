@@ -90,7 +90,10 @@ public class Population {
         return fireStationPos;
     }
 
-    public Individual selectParent() {
+    /*
+    Memilih parent dengan teknik roulette-wheel selection
+     */
+    public Individual selectParentRoulette() {
         double totalFitness = 0;
         for (Individual individual : population) {
             totalFitness += 1.0 / (1.0 + individual.getCost()); // Inverse for minimization
@@ -103,6 +106,26 @@ public class Population {
             currentSum += 1.0 / (1.0 + individual.getCost());
             if (currentSum >= randomValue) {
                 return individual;
+            }
+        }
+        return population.getLast();
+    }
+
+    /*
+    Memilih parent dengan teknik rank selection
+     */
+    public Individual selectParentRank() {
+        int N = population.size();
+
+        double totalRankWeight = (double) N * (N + 1) / 2.0;
+        double randomValue = rand.nextDouble() * totalRankWeight;
+
+        double currentSum = 0.0;
+        for (int i = 0; i < N; i++) {
+            int rank = N - i;
+            currentSum += rank;
+            if (currentSum >= randomValue) {
+                return population.get(i);
             }
         }
         return population.getLast();

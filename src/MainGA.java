@@ -19,6 +19,8 @@ public class MainGA {
             double crossoverRate = sc.nextDouble();
             double mutationRate = sc.nextDouble();
             double elitismPct = sc.nextDouble();
+            double convergence_window = sc.nextDouble();
+            double convergence_treshold = sc.nextDouble();
 
             sc = new Scanner(grid);
             int m = sc.nextInt();
@@ -63,4 +65,5 @@ public class MainGA {
         Individual result = myGeneticAlgo.runGenAlgo();
         result.printResult(fireStation.getEmptyPosition());
     }
+
 }

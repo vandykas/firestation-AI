@@ -55,12 +55,12 @@ public class MainGA {
     }
 
     /*
-    Melakukan hill climbing dan menyimpan hasil pada objek Solution
+    Melakukan algoritma genetik dan menyimpan individu terbaik yang ditemukan
      */
     public static void doGenAlgo(FireStation fireStation, int totalGeneration, int maxPopulationSize,
                                  double crossoverRate, double mutationRate, double elitismPct) {
         GA myGeneticAlgo = new GA(fireStation, totalGeneration, maxPopulationSize, crossoverRate, mutationRate, elitismPct, new Random());
         Individual result = myGeneticAlgo.runGenAlgo();
-        System.out.println(result.getCost());
+        result.printResult(fireStation.getEmptyPosition());
     }
 }

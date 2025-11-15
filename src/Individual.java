@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Individual implements Comparable<Individual> {
     private final Random rand;
-    private int[] chromosome;
+    private final int[] chromosome;
     private double cost;
 
     public Individual(Random rand, int[] chromosome) {
@@ -86,6 +86,13 @@ public class Individual implements Comparable<Individual> {
                 gene = newGene;
             }
             usedPositions.add(gene);
+        }
+    }
+
+    public void printResult(List<Position> emptyPositions) {
+        System.out.printf("%d %.5f\n", chromosome.length, cost);
+        for (int i : chromosome) {
+            System.out.println((emptyPositions.get(i).getX() + 1) + " " + (emptyPositions.get(i).getY() + 1));
         }
     }
 }

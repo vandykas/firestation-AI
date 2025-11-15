@@ -3,10 +3,10 @@ import java.util.*;
 public class Population {
     private final FireStation fireStation;
     private final Random rand;
-    private List<Individual> population;
-    private int maxPopulationSize;
+    private final List<Individual> population;
+    private final int maxPopulationSize;
     private int populationSize;
-    private double elitismPct;
+    private final double elitismPct;
 
     public Population(FireStation fireStation, Random rand, int maxPopulationSize, double elitismPct) {
         this.fireStation = fireStation;
@@ -68,7 +68,7 @@ public class Population {
         List<Position> emptyPositions = fireStation.getEmptyPosition();
         for (Individual i : population) {
             List<Position> fireStationPos = getFireStationPos(emptyPositions, i.getChromosome());
-            i.setCost(fireStation.getMinimumDistance(fireStationPos));
+            i.setCost(fireStation.getMinimumDistance(fireStationPos) / fireStation.getHouseCount());
         }
     }
 

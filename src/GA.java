@@ -6,11 +6,10 @@ public class GA {
     private final int totalGeneration;
     private final int maxPopulationSize;
     private final double mutationRate;
-    private double crossOverRate;
+    private final double crossOverRate;
     private final double elitismPct;
     private final double CONVERGENCE_THRESHOLD = 0.005;
     private final int CONVERGENCE_WINDOW = 6;
-    private final int REPETITIONS = 10;
 
     public GA(FireStation fireStation, int totalGeneration, int maxPopulationSize, double mutationRate, double crossOverRate, double elitismPct, Random rand) {
         this.fireStation = fireStation;
@@ -60,6 +59,7 @@ public class GA {
             population = nextPop;
             population.evaluatePopulationCost();
             population.sortPopulation();
+            System.out.printf("Generation: %d best distance: %.5f\n", generation, population.getBestIndividual().getCost());
 
             double meanPopulFitness = population.getMeanPopulationCost();
             generationFitness.add(meanPopulFitness);
@@ -81,10 +81,6 @@ public class GA {
                     System.out.println("Converged at generation " + generation);
                     break;
                 }
-            }
-
-            if (generation % 100 == 0) {
-                System.out.println("Generation " + generation + ", Mean fitness: " + meanPopulFitness);
             }
         }
         return population.getBestIndividual();

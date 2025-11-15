@@ -8,10 +8,10 @@ public class GA {
     private final double mutationRate;
     private final double crossOverRate;
     private final double elitismPct;
-    private final double CONVERGENCE_THRESHOLD = 0.005;
-    private final int CONVERGENCE_WINDOW = 6;
+    private final double convergence_treshold;
+    private final int convergence_window;
 
-    public GA(FireStation fireStation, int totalGeneration, int maxPopulationSize, double mutationRate, double crossOverRate, double elitismPct, Random rand) {
+    public GA(FireStation fireStation, int totalGeneration, int maxPopulationSize, double mutationRate, double crossOverRate, double elitismPct, Random rand, double convergence_treshold, double convergence_window) {
         this.fireStation = fireStation;
         this.totalGeneration = totalGeneration;
         this.maxPopulationSize = maxPopulationSize;
@@ -19,6 +19,8 @@ public class GA {
         this.crossOverRate = crossOverRate;
         this.elitismPct = elitismPct;
         this.rand = rand;
+        this.convergence_window = convergence_window;
+        this.convergence_treshold = convergence_treshold;
     }
 
     public Individual runGenAlgo() {
@@ -86,3 +88,4 @@ public class GA {
         return population.getBestIndividual();
     }
 }
+

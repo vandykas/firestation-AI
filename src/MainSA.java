@@ -1,12 +1,12 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
 public class MainSA {
 
     public static void main(String[] args) {
+        //untuk mengambil waktu sekarang yang nanti jadi seed untuk random
         long seedValue;
         seedValue = System.currentTimeMillis();
         
@@ -23,6 +23,10 @@ public class MainSA {
         long seedSebelum = -1;
         Random seededRnd ;
         System.out.println();
+
+        //jika ingin menggunakan seed random maka isi seedsebelum dengan -1
+        //tetapi jika ingin menggunakan seed yang sudah ada isi seedsebelum dengan seed 
+        //yang ingin digunakan dan ditambahkan l dibelakang angka supaya jadi long
         if (seedSebelum != -1) {
             seededRnd = new Random(seedSebelum);
             System.out.printf("Seed yang Digunakan: %d%n", seedSebelum);
@@ -32,8 +36,10 @@ public class MainSA {
             System.out.printf("Seed yang Digunakan: %d%n", seedValue);
         }
 
+        //parameter dan input diambil dari file
         File fileParam = new File(args[0]);
         File fileInput = new File(args[1]);
+
 
         try {
             Scanner sc = new Scanner(fileParam);
@@ -56,9 +62,12 @@ public class MainSA {
 
             FireStation fireStation = new FireStation(m, n, fireStationsCount);
 
+
+            //mengisi rumah dan pohon
             fillCell(sc, fireStation, true, houseCount);
             fillCell(sc, fireStation, false, treeCount);
 
+            
             doSimulatedAnnealing(fireStation, initialTemp, coolingRate, stoppingTemp, runs, seededRnd);
 
         } catch (FileNotFoundException e) {

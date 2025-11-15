@@ -20,6 +20,7 @@ public class MySA {
         return cost / housePositionsCount;
     }
 
+    
     public Solution simulatedAnnealing(double T, double coolingRate, double stoppingtemp) {
         State currentState = new State(fireStation, rnd);
         double currentCost = objectiveFunction(currentState);
@@ -44,7 +45,7 @@ public class MySA {
                     bestState = new State(fireStation, currentState.getState(), rnd);
                 }
             }
-
+            //suhu menurun
             T *= coolingRate;
         }
         return new Solution(bestState.getState(), bestCost);

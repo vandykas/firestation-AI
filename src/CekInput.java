@@ -20,12 +20,14 @@ public class CekInput {
             grid[x][y] = 2;
         }
 
+        int houseFound = 0;
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 0) {
                     System.out.print(". ");
                 }
                 else if (grid[i][j] == 1) {
+                    houseFound++;
                     System.out.print("H ");
                 }
                 else {
@@ -34,5 +36,6 @@ public class CekInput {
             }
             System.out.println();
         }
+        System.out.println(houseFound);
     }
 }

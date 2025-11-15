@@ -122,15 +122,13 @@ public class FireStation {
                         dist += newNode.dist;
                         houseFound++;
                     }
+                    else {
+                        queue.add(newNode);
+                    }
                     visited[newX][newY] = true;
-                    queue.add(newNode);
                 }
             }
         }
-
-        if (houseFound == houseCount) {
-            return dist;
-        }
-        return Integer.MAX_VALUE;
+        return dist + ((houseCount - houseFound) * rowSize * columnSize);
     }
 }

@@ -2,4 +2,4 @@ Compile :
 javac -d out src/*.java
 
 Run kode :
-java -cp out Main file_input
+java -cp out MainHCHC file_input

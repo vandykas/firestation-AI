@@ -32,7 +32,7 @@ public class InputGenerator {
         int minTreePercent = 20, maxTreePercent = 25;
         int t = (int) ((rand.nextInt((maxTreePercent - minTreePercent + 1)) + minTreePercent) / 100.0 * m * n);
 
-        // Jumlah fire station 15 - 25 persen total cell
+        // Jumlah fire station adalah 15 - 25 per rumah
         int minFirestation = 15, maxFireStation = 25;
         int p = h / (rand.nextInt((maxFireStation - minFirestation + 1)) + minFirestation);
         bw.write(p + " " + h + " " + t + "\n");
@@ -122,8 +122,8 @@ public class InputGenerator {
                     if (grid[newX][newY] == 1) {
                         houseFound++;
                     }
-                    queue.add(newPos);
                     visited[newX][newY] = true;
+                    queue.add(newPos);
                 }
             }
         }

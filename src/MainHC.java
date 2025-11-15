@@ -1,10 +1,9 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Main {
+public class MainHC {
 
     public static void main(String[] args) {
         if (args.length != 1) {
@@ -53,7 +52,7 @@ public class Main {
      */
     public static void doHillClimbing(FireStation fireStation) {
         HC myHillClimbing = new HC(fireStation, new Random());
-        Solution result = myHillClimbing.randomRestartHillClimbing(100, 10);
+        Solution result = myHillClimbing.randomRestartHillClimbing(1000, 1000);
 //        Solution result = myHillClimbing.hillClimbing(1);
         result.printSolution();
     }

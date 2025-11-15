@@ -129,6 +129,6 @@ public class FireStation {
                 }
             }
         }
-        return dist + ((houseCount - houseFound) * rowSize * columnSize);
+        return dist;
     }
 }

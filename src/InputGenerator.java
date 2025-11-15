@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class InputGenerator {
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         int m = sc.nextInt();
@@ -14,8 +15,7 @@ public class InputGenerator {
         Path file = Path.of("input\\" + fileName);
         try (BufferedWriter bw = Files.newBufferedWriter(file)) {
             writeInput(bw, m, n);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Error " + e.getMessage());
         }
     }
@@ -33,104 +33,121 @@ public class InputGenerator {
         int t = (int) ((rand.nextInt((maxTreePercent - minTreePercent + 1)) + minTreePercent) / 100.0 * m * n);
 
         // Jumlah fire station adalah 15 - 25 per rumah
-        int minFirestation = 15, maxFireStation = 25;
-        int p = h / (rand.nextInt((maxFireStation - minFirestation + 1)) + minFirestation);
+        int minFirestation = 15, maxFirestation = 25;
+        int p = h / (rand.nextInt((maxFirestation - minFirestation + 1)) + minFirestation);
+
         bw.write(p + " " + h + " " + t + "\n");
 
-        // Tempatkan pohon dan rumah secara random namun tetap memastikan tidak menimpa
-        // satu sama lain. Cek hasil penempatan dengan bfs untuk memastikan ada cell kosong
-        // yang bisa mencapai setiap rumah pada grid.
-        List<Position> housePlacement, treePlacement;
-        int[][] grid;
-        do {
-            grid = new int[m][n];
-            TreeSet<String> positionAdded = new TreeSet<>();
-            housePlacement = generatePosition(rand, positionAdded, m, n, h);
-            treePlacement = generatePosition(rand, positionAdded, m, n, t);
-            placeInGrid(grid, housePlacement, treePlacement);
-        }
-        while (placementNotValid(grid, m, n, h));
+        // Generate maze grid (0 = jalan, 3 = dinding)
+        int[][] grid = generateMaze(m, n, rand);
 
+        // Tempat menyimpan posisi rumah dan pohon
+        List<Position> housePlacement = new ArrayList<>();
+        List<Position> treePlacement = new ArrayList<>();
+
+        // Tempatkan rumah dan pohon hanya pada cell kosong
+        placeHousesAndTrees(grid, m, n, h, t, rand, housePlacement, treePlacement);
+
+        // Tulis ke file
         writeToTextFile(bw, housePlacement, treePlacement);
     }
 
-    /*
-    Menempatkan rumah dan pohon secara random tanpa menimpa cell yang sama
-     */
-    public static List<Position> generatePosition(Random rand, TreeSet<String> positionAdded,
-                                        int m, int n, int size) {
-        List<Position> placement = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            int x, y;
-            do {
-                x = rand.nextInt(m);
-                y = rand.nextInt(n);
+    // -------------------------------------------------------
+    // MAZE GENERATOR (RANDOMIZED DFS)
+    // -------------------------------------------------------
+    public static int[][] generateMaze(int m, int n, Random rand) {
+        int[][] grid = new int[m][n];
+
+        // Isi grid awal sebagai tembok
+        for (int i = 0; i < m; i++) Arrays.fill(grid[i], 3);
+
+        // Posisi awal harus ganjil agar maze konsisten
+        int startX = rand.nextInt(m / 2) * 2 + 1;
+        int startY = rand.nextInt(n / 2) * 2 + 1;
+
+        grid[startX][startY] = 0;
+
+        Stack<Position> stack = new Stack<>();
+        stack.push(new Position(startX, startY));
+
+        int[] moveX = {-2, 0, 2, 0};
+        int[] moveY = {0, 2, 0, -2};
+
+        while (!stack.isEmpty()) {
+            Position curr = stack.peek();
+            List<Integer> dirs = Arrays.asList(0, 1, 2, 3);
+            Collections.shuffle(dirs, rand);
+
+            boolean moved = false;
+
+            for (int d : dirs) {
+                int nx = curr.getX() + moveX[d];
+                int ny = curr.getY() + moveY[d];
+
+                if (nx > 0 && nx < m - 1 && ny > 0 && ny < n - 1 && grid[nx][ny] == 3) {
+                    grid[nx][ny] = 0;
+                    grid[curr.getX() + moveX[d] / 2][curr.getY() + moveY[d] / 2] = 0;
+                    stack.push(new Position(nx, ny));
+                    moved = true;
+                    break;
+                }
             }
-            while (positionAdded.contains(x + "," + y));
-            positionAdded.add(x + "," + y);
-            placement.add(new Position(x, y));
+
+            if (!moved) stack.pop();
         }
-        return placement;
+
+        return grid;
     }
 
-    /*
-    Memasukkan pohon dan rumah yang telah ditaruh ke dalam grid
-     */
-    public static void placeInGrid(int[][] grid, List<Position> housePosition, List<Position> treePosition) {
-        for (Position pos : housePosition) {
-            grid[pos.getX()][pos.getY()] = 1;
-        }
-        for (Position pos : treePosition) {
-            grid[pos.getX()][pos.getY()] = 2;
-        }
-    }
+    // -------------------------------------------------------
+    // PLACE HOUSES AND TREES
+    // -------------------------------------------------------
+    public static void placeHousesAndTrees(
+            int[][] grid,
+            int m, int n,
+            int h, int t,
+            Random rand,
+            List<Position> houses,
+            List<Position> trees
+    ) {
+        List<Position> empty = new ArrayList<>();
 
-    /*
-    Mengecek apakah setiap rumah dapat dicapai dari cell kosong
-     */
-    public static boolean placementNotValid(int[][] grid, int m, int n, int houseCount) {
-        int houseFound = 0;
-        boolean[][] visited = new boolean[m][n];
+        // Ambil semua cell kosong (hasil maze)
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 0 && !visited[i][j]) {
-                    houseFound += bfs(grid, new Position(i, j), m, n, visited);
+                if (grid[i][j] == 0) {
+                    empty.add(new Position(i, j));
                 }
             }
         }
-        return houseFound < houseCount;
-    }
 
-    /*
-    Flood fill dengan source cell kosong yang belum pernah dikunjungi, lalu hitung rumah yang ditemukan
-     */
-    public static int bfs(int[][] grid, Position startingPos, int m, int n, boolean[][] visited) {
-        int[] moveX = {-1, 0, 1, 0};
-        int[] moveY = {0, 1, 0, -1};
-        visited[startingPos.getX()][startingPos.getY()] = true;
+        Collections.shuffle(empty, rand);
 
-        Queue<Position> queue = new LinkedList<>();
-        queue.add(startingPos);
-        int houseFound = 0;
-        while (!queue.isEmpty()) {
-            Position currentPos = queue.poll();
-            for (int i = 0; i < 4; i++) {
-                int newX = currentPos.getX() + moveX[i];
-                int newY = currentPos.getY() + moveY[i];
-                Position newPos = new Position(newX, newY);
-                if (newX >= 0 && newX < m && newY >= 0 && newY < n && !visited[newX][newY] && grid[newX][newY] != 2) {
-                    if (grid[newX][newY] == 1) {
-                        houseFound++;
-                    }
-                    visited[newX][newY] = true;
-                    queue.add(newPos);
-                }
-            }
+        if (h + t > empty.size()) {
+            throw new RuntimeException("Tidak cukup cell kosong untuk menempatkan rumah + pohon");
         }
-        return houseFound;
+
+        // Tempatkan rumah
+        for (int i = 0; i < h; i++) {
+            Position p = empty.get(i);
+            houses.add(p);
+            grid[p.getX()][p.getY()] = 1;
+        }
+
+        // Tempatkan pohon
+        for (int i = h; i < h + t; i++) {
+            Position p = empty.get(i);
+            trees.add(p);
+            grid[p.getX()][p.getY()] = 2;
+        }
     }
 
-    public static void writeToTextFile(BufferedWriter bw, List<Position> housePos, List<Position> treePos) throws IOException {
+    // -------------------------------------------------------
+    // WRITE OUTPUT
+    // -------------------------------------------------------
+    public static void writeToTextFile(BufferedWriter bw, List<Position> housePos, List<Position> treePos)
+            throws IOException {
+
         for (Position pos : housePos) {
             bw.write((pos.getX() + 1) + " " + (pos.getY() + 1) + "\n");
         }

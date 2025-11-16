@@ -11,6 +11,7 @@ public class MainSA {
         double coolingRate = 0;
         double stoppingTemp = 0;
         int runs = 0;
+        
 
         //parameter dan input diambil dari file
         File fileParam = new File(args[0]);
